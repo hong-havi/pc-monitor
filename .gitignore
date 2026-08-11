@@ -1,0 +1,28 @@
+# Build
+build/
+dist/
+*.spec
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+venv/
+.venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Lib (NuGet downloads - large binaries)
+lib/
