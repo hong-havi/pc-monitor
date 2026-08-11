@@ -94,7 +94,7 @@ class TempColumnChart(QWidget):
             # 하단 라벨
             font_label = QFont("Pretendard", 11, QFont.Weight.DemiBold)
             painter.setFont(font_label)
-            painter.setPen(QColor("#9aa3ae"))
+            painter.setPen(QColor("#c0c8d2"))
             metrics_l = painter.fontMetrics()
             lw = metrics_l.horizontalAdvance(label)
             painter.drawText(int(cx - lw / 2), int(h - 4), label)
@@ -115,7 +115,7 @@ class TempWidget(QWidget):
         # 타이틀
         self._title = QLabel("온도")
         self._title.setFont(QFont("Pretendard", 13, QFont.Weight.Bold))
-        self._title.setStyleSheet("color: #cfd6de;")
+        self._title.setStyleSheet("color: #e4e8ed;")
         layout.addWidget(self._title)
 
         # 차트 영역

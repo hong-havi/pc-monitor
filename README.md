@@ -1,6 +1,7 @@
 # PC Monitor Dashboard
 
 960x640 미니모니터용 하드웨어 모니터링 대시보드 (Windows)
+![alt text](image.png)
 
 ## 기능
 

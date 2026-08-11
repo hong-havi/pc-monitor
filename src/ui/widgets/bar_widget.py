@@ -18,7 +18,7 @@ class ClockBarItem(QWidget):
         self._max_value = max_value
         self._display_text = ""
         self._unit = ""
-        self.setFixedHeight(52)
+        self.setFixedHeight(56)
 
     def set_value(self, value: float, display_text: str, unit: str):
         self._value = value
@@ -33,13 +33,13 @@ class ClockBarItem(QWidget):
         w = self.width()
         h = self.height()
 
-        # 상단 행: 라벨(좌) + 값+단위(우)
-        top_y = 18
+        # 상단 행: 라벨(좌) + 값+단위(우) — baseline을 충분히 아래로
+        top_y = 28
 
         # 라벨
         font_label = QFont("Pretendard", 12, QFont.Weight.DemiBold)
         painter.setFont(font_label)
-        painter.setPen(QColor("#9aa3ae"))
+        painter.setPen(QColor("#c0c8d2"))
         painter.drawText(4, top_y, self._label)
 
         # 값 (오른쪽)
@@ -63,11 +63,11 @@ class ClockBarItem(QWidget):
         painter.drawText(int(val_x), top_y, self._display_text)
 
         painter.setFont(font_unit)
-        painter.setPen(QColor("#8a929c"))
+        painter.setPen(QColor("#b0b8c4"))
         painter.drawText(int(val_x + val_w + 4), top_y, self._unit)
 
         # 프로그레스 바
-        bar_y = top_y + 8
+        bar_y = top_y + 10
         bar_h = 10
         bar_x = 4
         bar_w = w - 8
@@ -99,7 +99,7 @@ class ClockWidget(QWidget):
 
         title = QLabel("클럭")
         title.setFont(QFont("Pretendard", 13, QFont.Weight.Bold))
-        title.setStyleSheet("color: #cfd6de;")
+        title.setStyleSheet("color: #e4e8ed;")
         layout.addWidget(title)
 
         layout.addStretch()
@@ -134,7 +134,7 @@ class PowerWidget(QWidget):
 
         title = QLabel("전력")
         title.setFont(QFont("Pretendard", 13, QFont.Weight.Bold))
-        title.setStyleSheet("color: #cfd6de;")
+        title.setStyleSheet("color: #e4e8ed;")
         layout.addWidget(title)
 
         layout.addStretch()
@@ -186,7 +186,7 @@ class _PowerDisplay(QWidget):
         # 합계 라벨 (왼쪽)
         font_label = QFont("Pretendard", 12, QFont.Weight.DemiBold)
         painter.setFont(font_label)
-        painter.setPen(QColor("#9aa3ae"))
+        painter.setPen(QColor("#c0c8d2"))
         painter.drawText(4, row1_baseline, "합계")
 
         # 큰 숫자 (오른쪽)
@@ -231,7 +231,7 @@ class _PowerDisplay(QWidget):
         bottom_y = bar_y + bar_h + 18
         font_bottom = QFont("Pretendard", 11, QFont.Weight.DemiBold)
         painter.setFont(font_bottom)
-        painter.setPen(QColor("#8b939e"))
+        painter.setPen(QColor("#b0b8c4"))
 
         cpu_text = f"CPU {self._cpu:.0f}W"
         gpu_text = f"GPU {self._gpu:.0f}W"

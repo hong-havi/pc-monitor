@@ -139,7 +139,7 @@ class NetworkWidget(QWidget):
 
         title = QLabel("네트워크")
         title.setFont(QFont("Pretendard", 13, QFont.Weight.Bold))
-        title.setStyleSheet("color: #cfd6de;")
+        title.setStyleSheet("color: #e4e8ed;")
         header.addWidget(title)
 
         header.addStretch()
@@ -147,7 +147,7 @@ class NetworkWidget(QWidget):
         # 범례
         legend = QLabel("● In  ● Out")
         legend.setFont(QFont("Pretendard", 10, QFont.Weight.DemiBold))
-        legend.setStyleSheet("color: #8b939e;")
+        legend.setStyleSheet("color: #b0b8c4;")
         header.addWidget(legend)
 
         layout.addLayout(header)

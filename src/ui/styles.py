@@ -7,12 +7,12 @@ COLORS = {
     "bg_card_border": "#22262c",
     "bg_bar_track": "#23272e",
     "text_primary": "#f2f4f7",
-    "text_secondary": "#b3bcc7",
-    "text_dim": "#8b939e",
-    "text_muted": "#7c848f",
-    "text_label": "#9aa3ae",
-    "text_heading": "#cfd6de",
-    "text_value": "#c8ced6",
+    "text_secondary": "#d9dee4",
+    "text_dim": "#b0b8c4",
+    "text_muted": "#a0a8b4",
+    "text_label": "#c0c8d2",
+    "text_heading": "#e4e8ed",
+    "text_value": "#dce1e8",
 
     # 게이지 색상
     "gauge_cpu": "#8b7cf6",       # 보라색

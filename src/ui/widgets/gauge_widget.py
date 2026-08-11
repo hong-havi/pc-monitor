@@ -278,7 +278,7 @@ class _GaugeDrawArea(QWidget):
         sub_font_size = max(int(gauge_size * 0.12), 10)
         font_sub = QFont("Pretendard", sub_font_size, QFont.Weight.DemiBold)
         painter.setFont(font_sub)
-        painter.setPen(QColor("#8a929c"))
+        painter.setPen(QColor("#b0b8c4"))
         metrics_sub = painter.fontMetrics()
         sub_width = metrics_sub.horizontalAdvance(sub)
         painter.drawText(
@@ -291,7 +291,7 @@ class _GaugeDrawArea(QWidget):
         label_font_size = max(int(gauge_size * 0.16), 12)
         font_label = QFont("Pretendard", label_font_size, QFont.Weight.Bold)
         painter.setFont(font_label)
-        painter.setPen(QColor("#b3bcc7"))
+        painter.setPen(QColor("#c0c8d2"))
         label_metrics = painter.fontMetrics()
         label_width = label_metrics.horizontalAdvance(self._label)
         painter.drawText(

@@ -147,7 +147,7 @@ class DiskDriveItem(QWidget):
         # 드라이브명
         font_drive = QFont("Pretendard", 13, QFont.Weight.Bold)
         painter.setFont(font_drive)
-        painter.setPen(QColor("#c8ced6"))
+        painter.setPen(QColor("#dce1e8"))
         painter.drawText(4, top_y, self._drive)
 
         drive_w = painter.fontMetrics().horizontalAdvance(self._drive)
@@ -162,7 +162,7 @@ class DiskDriveItem(QWidget):
         # 상세 정보 (오른쪽)
         font_detail = QFont("Pretendard", 11, QFont.Weight.DemiBold)
         painter.setFont(font_detail)
-        painter.setPen(QColor("#8b939e"))
+        painter.setPen(QColor("#b0b8c4"))
         detail_text = f"{self._used_gb:.0f} / {self._total_gb:.0f} GB · {self._free_gb:.0f}GB 남음"
         detail_w = painter.fontMetrics().horizontalAdvance(detail_text)
         painter.drawText(int(w - detail_w - 4), top_y, detail_text)
@@ -203,7 +203,7 @@ class DiskWidget(QWidget):
 
         title = QLabel("디스크")
         title.setFont(QFont("Pretendard", 13, QFont.Weight.Bold))
-        title.setStyleSheet("color: #cfd6de;")
+        title.setStyleSheet("color: #e4e8ed;")
         header.addWidget(title)
 
         header.addStretch()
@@ -211,7 +211,7 @@ class DiskWidget(QWidget):
         # R/W 속도 표시
         self._speed_label = QLabel("R 0.0  W 0.0 MB/s · 60초")
         self._speed_label.setFont(QFont("Pretendard", 10, QFont.Weight.DemiBold))
-        self._speed_label.setStyleSheet("color: #8b939e;")
+        self._speed_label.setStyleSheet("color: #b0b8c4;")
         header.addWidget(self._speed_label)
 
         layout.addLayout(header)

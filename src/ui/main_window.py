@@ -101,6 +101,13 @@ class MainWindow(QMainWindow):
         bottom_row = self._create_bottom_row()
         main_layout.addLayout(bottom_row)
 
+        # === 하단 크레딧 ===
+        credit = QLabel("By. Havi.hong")
+        credit.setFont(QFont("Pretendard", 9))
+        credit.setStyleSheet(f"color: {COLORS['text_dim']};")
+        credit.setAlignment(Qt.AlignmentFlag.AlignRight)
+        main_layout.addWidget(credit)
+
     def _create_header(self) -> QHBoxLayout:
         """헤더 - 디자인 컴프 스타일"""
         layout = QHBoxLayout()
@@ -127,7 +134,7 @@ class MainWindow(QMainWindow):
         # 가동시간
         self._uptime_label = QLabel("가동 0일 00:00")
         self._uptime_label.setFont(QFont("Pretendard", 12, QFont.Weight.DemiBold))
-        self._uptime_label.setStyleSheet(f"color: {COLORS['text_muted']};")
+        self._uptime_label.setStyleSheet(f"color: {COLORS['text_secondary']};")
         layout.addWidget(self._uptime_label)
 
         layout.addStretch()
@@ -135,7 +142,7 @@ class MainWindow(QMainWindow):
         # 우측: 날짜/시간
         self._datetime_label = QLabel("2026-08-11 (화) 09:06")
         self._datetime_label.setFont(QFont("Pretendard", 13, QFont.Weight.DemiBold))
-        self._datetime_label.setStyleSheet(f"color: {COLORS['text_dim']};")
+        self._datetime_label.setStyleSheet(f"color: {COLORS['text_secondary']};")
         layout.addWidget(self._datetime_label)
 
         # 전체화면 버튼
