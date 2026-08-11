@@ -5,6 +5,11 @@
 - 중앙에 큰 숫자 + 단위 텍스트
 - 하단에 라벨(CPU/GPU/RAM/VRAM)
 - 최하단에 미니 영역 차트 (스파크라인)
+
+임계치 색상:
+- CPU: 70% 미만 정상, 70~90% 주의(주황), 90%+ 위험(빨강)
+- RAM/VRAM: 70% 미만 정상, 70~85% 주의(주황), 85%+ 위험(빨강)
+- GPU: 항상 기본 색상 유지
 """
 import math
 from collections import deque
@@ -14,6 +19,10 @@ from PyQt6.QtGui import (
     QPainter, QPen, QFont, QColor, QPainterPath,
     QLinearGradient,
 )
+
+# 임계치 색상
+_COLOR_WARNING = "#f59e0b"  # 주황
+_COLOR_DANGER = "#ef4444"   # 빨강
 
 
 class SparklineWidget(QWidget):
@@ -92,6 +101,11 @@ class GaugeWidget(QWidget):
     270도 호(arc) 형태의 게이지.
     중앙에 큰 숫자, 아래에 라벨.
     하단에 미니 스파크라인 그래프.
+
+    threshold_mode:
+        "cpu"  — 70/90% 기준
+        "ram"  — 70/85% 기준 (RAM, VRAM 공용)
+        None   — 임계치 없음 (GPU 등)
     """
 
     def __init__(
@@ -100,6 +114,7 @@ class GaugeWidget(QWidget):
         unit: str = "%",
         max_value: float = 100.0,
         color: str = "#4ade80",
+        threshold_mode: str | None = None,
         parent=None,
     ):
         super().__init__(parent)
@@ -107,7 +122,9 @@ class GaugeWidget(QWidget):
         self._max_value = max_value
         self._label = label
         self._unit = unit
+        self._base_color = QColor(color)
         self._color = QColor(color)
+        self._threshold_mode = threshold_mode
         self._sub_text = ""
 
         layout = QVBoxLayout(self)
@@ -125,9 +142,31 @@ class GaugeWidget(QWidget):
 
         self.setMinimumSize(120, 150)
 
+    def _resolve_color(self) -> QColor:
+        """현재 값에 따라 임계치 색상 결정"""
+        if not self._threshold_mode:
+            return self._base_color
+
+        pct = (self._value / self._max_value * 100) if self._max_value > 0 else 0
+
+        if self._threshold_mode == "cpu":
+            if pct >= 90:
+                return QColor(_COLOR_DANGER)
+            elif pct >= 70:
+                return QColor(_COLOR_WARNING)
+        elif self._threshold_mode == "ram":
+            if pct >= 85:
+                return QColor(_COLOR_DANGER)
+            elif pct >= 70:
+                return QColor(_COLOR_WARNING)
+
+        return self._base_color
+
     def set_value(self, value: float):
         self._value = min(value, self._max_value)
-        self._gauge_area.set_value(self._value)
+        self._color = self._resolve_color()
+        self._gauge_area.set_value(self._value, self._color)
+        self._sparkline._color = self._color
         self._sparkline.add_value(self._value)
 
     def set_sub_text(self, text: str):
@@ -157,8 +196,10 @@ class _GaugeDrawArea(QWidget):
         self._color = QColor(color)
         self._sub_text = ""
 
-    def set_value(self, value: float):
+    def set_value(self, value: float, color: QColor = None):
         self._value = value
+        if color:
+            self._color = color
         self.update()
 
     def set_sub_text(self, text: str):

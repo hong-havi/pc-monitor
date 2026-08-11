@@ -179,11 +179,15 @@ class _PowerDisplay(QWidget):
 
         color = QColor("#f5a524")
 
-        # 합계 행
+        # 레이아웃 계산: 상단 합계행, 중간 바, 하단 CPU/GPU
+        # 합계 행 baseline (충분한 여백 확보)
+        row1_baseline = 36
+
+        # 합계 라벨 (왼쪽)
         font_label = QFont("Pretendard", 12, QFont.Weight.DemiBold)
         painter.setFont(font_label)
         painter.setPen(QColor("#9aa3ae"))
-        painter.drawText(4, 18, "합계")
+        painter.drawText(4, row1_baseline, "합계")
 
         # 큰 숫자 (오른쪽)
         font_val = QFont("Pretendard", 28, QFont.Weight.Bold)
@@ -202,14 +206,14 @@ class _PowerDisplay(QWidget):
 
         painter.setFont(font_val)
         painter.setPen(color)
-        painter.drawText(int(val_x), 22, val_text)
+        painter.drawText(int(val_x), row1_baseline, val_text)
 
         painter.setFont(font_unit)
         painter.setPen(QColor(color.red(), color.green(), color.blue(), 200))
-        painter.drawText(int(val_x + val_w + 3), 22, "W")
+        painter.drawText(int(val_x + val_w + 3), row1_baseline, "W")
 
         # 프로그레스 바
-        bar_y = 32
+        bar_y = row1_baseline + 10
         bar_h = 12
         bar_x = 4
         bar_w = w - 8
@@ -224,7 +228,7 @@ class _PowerDisplay(QWidget):
         painter.drawRoundedRect(QRectF(bar_x, bar_y, fill_w, bar_h), 4, 4)
 
         # 하단 CPU/GPU 분리 표시
-        bottom_y = bar_y + bar_h + 16
+        bottom_y = bar_y + bar_h + 18
         font_bottom = QFont("Pretendard", 11, QFont.Weight.DemiBold)
         painter.setFont(font_bottom)
         painter.setPen(QColor("#8b939e"))

@@ -17,10 +17,14 @@ from PyQt6.QtGui import QPainter, QColor, QFont, QPen
 
 
 def _temp_color(value: float) -> QColor:
-    """온도 값에 따른 색상 반환"""
-    if value >= 80:
+    """온도 값에 따른 색상 반환
+    - 70°C 미만: 정상 (초록)
+    - 70~85°C: 주의 (주황)
+    - 85°C 이상: 위험 (빨강)
+    """
+    if value >= 85:
         return QColor("#ef4444")
-    elif value >= 60:
+    elif value >= 70:
         return QColor("#f5a524")
     else:
         return QColor("#4ade80")

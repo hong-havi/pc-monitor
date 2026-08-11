@@ -133,8 +133,10 @@ class DiskDriveItem(QWidget):
         w = self.width()
         h = self.height()
 
-        # 색상 결정
-        if self._percent >= 70:
+        # 색상 결정: 70% 미만 초록, 70~90% 주황, 90%+ 빨강
+        if self._percent >= 90:
+            color = QColor("#ef4444")
+        elif self._percent >= 70:
             color = QColor("#f5a524")
         else:
             color = QColor("#4ade80")
