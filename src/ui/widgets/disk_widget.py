@@ -1,25 +1,35 @@
-"""디스크 위젯 - 드라이브별 사용량 바 + 잔여 공간 표시"""
+"""디스크 위젯 - 드라이브별 사용량 바 + Read/Write 스파크라인 그래프
+
+디자인 컴프:
+- 헤더: "디스크" + R/W 속도 + 기간
+- 드라이브별: 드라이브명 + 퍼센트 + "X / Y GB · ZGB 남음" + 프로그레스 바
+- 하단: R/W 듀얼 라인 스파크라인
+"""
+from collections import deque
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
-from PyQt6.QtCore import Qt, QRectF
-from PyQt6.QtGui import QPainter, QColor, QFont
+from PyQt6.QtCore import Qt, QRectF, QPointF
+from PyQt6.QtGui import QPainter, QColor, QFont, QPen, QPainterPath
 
 
-class DiskDriveBar(QWidget):
-    """단일 드라이브 사용량 바"""
+class DiskSparkline(QWidget):
+    """디스크 R/W 스파크라인 그래프"""
+
+    HISTORY_SIZE = 60
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self._drive = ""
-        self._total_gb = 0.0
-        self._used_gb = 0.0
-        self._free_gb = 0.0
-        self.setFixedHeight(32)
+        self._read_history = deque([0.0] * self.HISTORY_SIZE, maxlen=self.HISTORY_SIZE)
+        self._write_history = deque([0.0] * self.HISTORY_SIZE, maxlen=self.HISTORY_SIZE)
+        self._max_value = 1.0
+        self.setFixedHeight(34)
 
-    def set_data(self, drive: str, total_gb: float, used_gb: float, free_gb: float):
-        self._drive = drive
-        self._total_gb = total_gb
-        self._used_gb = used_gb
-        self._free_gb = free_gb
+    def add_data(self, read_speed: float, write_speed: float):
+        self._read_history.append(read_speed)
+        self._write_history.append(write_speed)
+
+        all_values = list(self._read_history) + list(self._write_history)
+        max_val = max(all_values) if all_values else 1.0
+        self._max_value = max(max_val * 1.2, 1.0)
         self.update()
 
     def paintEvent(self, event):
@@ -29,131 +39,210 @@ class DiskDriveBar(QWidget):
         w = self.width()
         h = self.height()
 
-        # 드라이브 레이블 (왼쪽)
-        font = QFont("Segoe UI", 16, QFont.Weight.Bold)
-        painter.setFont(font)
-        painter.setPen(QColor("#ffffff"))
-        painter.drawText(4, int(h / 2 + 5), self._drive)
+        if w <= 0 or h <= 0:
+            painter.end()
+            return
 
-        # 잔여 공간 텍스트 (오른쪽)
-        font_val = QFont("Segoe UI", 12)
-        painter.setFont(font_val)
-        painter.setPen(QColor("#d0d0d0"))
-        free_text = f"{self._free_gb:.0f}GB 남음"
-        metrics = painter.fontMetrics()
-        val_w = metrics.horizontalAdvance(free_text)
-        painter.drawText(int(w - val_w - 4), int(h / 2 + 4), free_text)
+        # 그리드
+        painter.setPen(QPen(QColor("#1d2128"), 1))
+        for i in range(1, 3):
+            y = h * i / 3
+            painter.drawLine(0, int(y), w, int(y))
 
-        # 바 영역
-        bar_x = 35
-        bar_w = w - 45 - val_w
-        bar_y = int(h / 2 - 4)
-        bar_h = 8
+        # Read (초록) - 영역 + 라인
+        self._draw_area_line(painter, self._read_history, QColor("#4ade80"), w, h)
+        # Write (파랑) - 라인만
+        self._draw_line(painter, self._write_history, QColor("#3b82f6"), w, h)
 
-        if bar_w < 10:
-            bar_w = 10
+        painter.end()
 
-        # 바 배경
+    def _draw_area_line(self, painter, data, color, w, h):
+        if len(data) < 2:
+            return
+        points = []
+        for i, val in enumerate(data):
+            x = w * i / (len(data) - 1)
+            y = h - (val / self._max_value) * h
+            y = max(1, min(h - 1, y))
+            points.append(QPointF(x, y))
+
+        fill_path = QPainterPath()
+        fill_path.moveTo(QPointF(0, h))
+        for pt in points:
+            fill_path.lineTo(pt)
+        fill_path.lineTo(QPointF(w, h))
+        fill_path.closeSubpath()
+
+        fill_color = QColor(color)
+        fill_color.setAlpha(24)
         painter.setPen(Qt.PenStyle.NoPen)
-        painter.setBrush(QColor("#3a3a3a"))
-        painter.drawRoundedRect(QRectF(bar_x, bar_y, bar_w, bar_h), 3, 3)
+        painter.setBrush(fill_color)
+        painter.drawPath(fill_path)
 
-        # 바 채우기
-        if self._total_gb > 0:
-            ratio = min(self._used_gb / self._total_gb, 1.0)
-            fill_w = bar_w * ratio
+        line_path = QPainterPath()
+        line_path.moveTo(points[0])
+        for pt in points[1:]:
+            line_path.lineTo(pt)
+        painter.setPen(QPen(color, 2))
+        painter.setBrush(Qt.BrushStyle.NoBrush)
+        painter.drawPath(line_path)
 
-            # 사용량에 따른 색상
-            if ratio >= 0.9:
-                color = QColor("#e63946")  # 빨강
-            elif ratio >= 0.7:
-                color = QColor("#f0a030")  # 주황
-            else:
-                color = QColor("#4ecf72")  # 초록
+    def _draw_line(self, painter, data, color, w, h):
+        if len(data) < 2:
+            return
+        points = []
+        for i, val in enumerate(data):
+            x = w * i / (len(data) - 1)
+            y = h - (val / self._max_value) * h
+            y = max(1, min(h - 1, y))
+            points.append(QPointF(x, y))
 
-            painter.setBrush(color)
-            painter.drawRoundedRect(QRectF(bar_x, bar_y, fill_w, bar_h), 3, 3)
+        line_path = QPainterPath()
+        line_path.moveTo(points[0])
+        for pt in points[1:]:
+            line_path.lineTo(pt)
+        painter.setPen(QPen(color, 2))
+        painter.setBrush(Qt.BrushStyle.NoBrush)
+        painter.drawPath(line_path)
+
+
+class DiskDriveItem(QWidget):
+    """단일 드라이브 표시: 드라이브명 + % + 상세 + 프로그레스 바"""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._drive = ""
+        self._total_gb = 0.0
+        self._used_gb = 0.0
+        self._free_gb = 0.0
+        self._percent = 0.0
+        self.setFixedHeight(44)
+
+    def set_data(self, drive: str, total_gb: float, used_gb: float, free_gb: float):
+        self._drive = drive
+        self._total_gb = total_gb
+        self._used_gb = used_gb
+        self._free_gb = free_gb
+        self._percent = (used_gb / total_gb * 100) if total_gb > 0 else 0
+        self.update()
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+
+        w = self.width()
+        h = self.height()
+
+        # 색상 결정
+        if self._percent >= 70:
+            color = QColor("#f5a524")
+        else:
+            color = QColor("#4ade80")
+
+        # 상단 행: 드라이브명 + % + 상세
+        top_y = 16
+
+        # 드라이브명
+        font_drive = QFont("Pretendard", 13, QFont.Weight.Bold)
+        painter.setFont(font_drive)
+        painter.setPen(QColor("#c8ced6"))
+        painter.drawText(4, top_y, self._drive)
+
+        drive_w = painter.fontMetrics().horizontalAdvance(self._drive)
+
+        # 퍼센트
+        font_pct = QFont("Pretendard", 12, QFont.Weight.DemiBold)
+        painter.setFont(font_pct)
+        painter.setPen(color)
+        pct_text = f"{self._percent:.0f}%"
+        painter.drawText(int(4 + drive_w + 10), top_y, pct_text)
+
+        # 상세 정보 (오른쪽)
+        font_detail = QFont("Pretendard", 11, QFont.Weight.DemiBold)
+        painter.setFont(font_detail)
+        painter.setPen(QColor("#8b939e"))
+        detail_text = f"{self._used_gb:.0f} / {self._total_gb:.0f} GB · {self._free_gb:.0f}GB 남음"
+        detail_w = painter.fontMetrics().horizontalAdvance(detail_text)
+        painter.drawText(int(w - detail_w - 4), top_y, detail_text)
+
+        # 프로그레스 바
+        bar_y = top_y + 8
+        bar_h = 14
+        bar_x = 4
+        bar_w = w - 8
+
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setBrush(QColor("#23272e"))
+        painter.drawRoundedRect(QRectF(bar_x, bar_y, bar_w, bar_h), 4, 4)
+
+        ratio = min(self._percent / 100.0, 1.0)
+        fill_w = bar_w * ratio
+        painter.setBrush(color)
+        painter.drawRoundedRect(QRectF(bar_x, bar_y, fill_w, bar_h), 4, 4)
 
         painter.end()
 
 
 class DiskWidget(QWidget):
-    """디스크 섹션 - Read/Write 속도 + 드라이브별 사용량"""
+    """디스크 섹션 - R/W 속도 헤더 + 드라이브 바 + 스파크라인"""
 
-    MAX_DRIVES = 4  # 최대 표시 드라이브 수
+    MAX_DRIVES = 4
 
     def __init__(self, parent=None):
         super().__init__(parent)
 
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(8, 4, 8, 4)
+        layout.setContentsMargins(10, 6, 10, 8)
         layout.setSpacing(6)
 
-        # 타이틀
+        # 헤더: 타이틀 + R/W 속도
+        header = QHBoxLayout()
+        header.setSpacing(8)
+
         title = QLabel("디스크")
-        title.setFont(QFont("Malgun Gothic", 14))
-        title.setStyleSheet("color: #d0d0d0;")
-        layout.addWidget(title)
+        title.setFont(QFont("Pretendard", 13, QFont.Weight.Bold))
+        title.setStyleSheet("color: #cfd6de;")
+        header.addWidget(title)
 
-        # Read/Write 속도 헤더
-        speed_row = QHBoxLayout()
-        speed_row.setSpacing(12)
+        header.addStretch()
 
-        # Read
-        read_col = QVBoxLayout()
-        read_col.setSpacing(0)
-        read_label = QLabel("Read")
-        read_label.setFont(QFont("Segoe UI", 12))
-        read_label.setStyleSheet("color: #d0d0d0;")
-        read_col.addWidget(read_label)
-        self._read_value = QLabel("0.0 MB/s")
-        self._read_value.setFont(QFont("Segoe UI", 16, QFont.Weight.Bold))
-        self._read_value.setStyleSheet("color: #4ecf72;")
-        read_col.addWidget(self._read_value)
-        speed_row.addLayout(read_col)
+        # R/W 속도 표시
+        self._speed_label = QLabel("R 0.0  W 0.0 MB/s · 60초")
+        self._speed_label.setFont(QFont("Pretendard", 10, QFont.Weight.DemiBold))
+        self._speed_label.setStyleSheet("color: #8b939e;")
+        header.addWidget(self._speed_label)
 
-        # Write
-        write_col = QVBoxLayout()
-        write_col.setSpacing(0)
-        write_label = QLabel("Write")
-        write_label.setFont(QFont("Segoe UI", 12))
-        write_label.setStyleSheet("color: #d0d0d0;")
-        write_col.addWidget(write_label)
-        self._write_value = QLabel("0.0 MB/s")
-        self._write_value.setFont(QFont("Segoe UI", 16, QFont.Weight.Bold))
-        self._write_value.setStyleSheet("color: #4488ff;")
-        write_col.addWidget(self._write_value)
-        speed_row.addLayout(write_col)
+        layout.addLayout(header)
 
-        speed_row.addStretch()
-        layout.addLayout(speed_row)
-
-        # 드라이브 바들
-        self._drive_bars: list[DiskDriveBar] = []
+        # 드라이브 항목들
+        self._drive_items: list[DiskDriveItem] = []
         for _ in range(self.MAX_DRIVES):
-            bar = DiskDriveBar()
-            bar.setVisible(False)
-            self._drive_bars.append(bar)
-            layout.addWidget(bar)
+            item = DiskDriveItem()
+            item.setVisible(False)
+            self._drive_items.append(item)
+            layout.addWidget(item)
 
         layout.addStretch()
 
-    def update_data(self, read_speed: float, write_speed: float, disks: list):
-        """데이터 업데이트
+        # 하단 스파크라인
+        self._sparkline = DiskSparkline()
+        layout.addWidget(self._sparkline)
 
-        Args:
-            read_speed: 읽기 속도 MB/s
-            write_speed: 쓰기 속도 MB/s
-            disks: [{drive, total_gb, used_gb, free_gb}, ...]
-        """
-        self._read_value.setText(f"{read_speed:.1f} MB/s")
-        self._write_value.setText(f"{write_speed:.1f} MB/s")
+    def update_data(self, read_speed: float, write_speed: float, disks: list):
+        """데이터 업데이트"""
+        # 속도 헤더 업데이트
+        self._speed_label.setText(
+            f"R {read_speed:.1f}  W {write_speed:.1f} MB/s · 60초"
+        )
 
         # 드라이브 바 업데이트
-        for i, bar in enumerate(self._drive_bars):
+        for i, item in enumerate(self._drive_items):
             if i < len(disks):
                 d = disks[i]
-                bar.set_data(d['drive'], d['total_gb'], d['used_gb'], d['free_gb'])
-                bar.setVisible(True)
+                item.set_data(d['drive'], d['total_gb'], d['used_gb'], d['free_gb'])
+                item.setVisible(True)
             else:
-                bar.setVisible(False)
+                item.setVisible(False)
+
+        # 스파크라인 데이터
+        self._sparkline.add_data(read_speed, write_speed)

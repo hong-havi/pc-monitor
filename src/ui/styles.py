@@ -1,38 +1,47 @@
-"""대시보드 스타일 정의 - 다크 테마"""
+"""대시보드 스타일 정의 - 다크 테마 (디자인 컴프 반영)"""
 
-# 색상 팔레트
+# 색상 팔레트 (PC Monitor Mini.dc.html 기준)
 COLORS = {
-    "bg_dark": "#1a1a1a",
-    "bg_card": "#2a2a2a",
-    "bg_card_border": "#3a3a3a",
-    "text_primary": "#ffffff",
-    "text_secondary": "#aaaaaa",
-    "text_dim": "#666666",
+    "bg_dark": "#0b0d10",
+    "bg_card": "#14171b",
+    "bg_card_border": "#22262c",
+    "bg_bar_track": "#23272e",
+    "text_primary": "#f2f4f7",
+    "text_secondary": "#b3bcc7",
+    "text_dim": "#8b939e",
+    "text_muted": "#7c848f",
+    "text_label": "#9aa3ae",
+    "text_heading": "#cfd6de",
+    "text_value": "#c8ced6",
 
     # 게이지 색상
-    "gauge_cpu": "#7c6ef0",       # 보라색
-    "gauge_gpu": "#4ecf72",       # 초록색
-    "gauge_mem": "#4ecf72",       # 초록색
-    "gauge_vram": "#4ecf72",      # 초록색
+    "gauge_cpu": "#8b7cf6",       # 보라색
+    "gauge_gpu": "#22d3ee",       # 시안
+    "gauge_mem": "#3b82f6",       # 파랑
+    "gauge_vram": "#f59e0b",      # 앰버
 
     # 온도 바 색상
-    "temp_cpu": "#4ecf72",        # 초록
-    "temp_gpu": "#f0a030",        # 주황
-    "temp_board": "#555555",      # 회색
-    "temp_ssd": "#2a9d8f",        # 청록
+    "temp_hot": "#f5a524",        # 주황 (>=60)
+    "temp_normal": "#4ade80",     # 초록 (<60)
 
-    # 프로그레스바
-    "bar_cpu_clock": "#4488ff",   # 파랑
-    "bar_gpu_clock": "#4ecf72",   # 초록
+    # 클럭/전력
+    "bar_clock": "#3b82f6",       # 파랑
+    "power_color": "#f5a524",     # 앰버
 
     # 네트워크
-    "net_download": "#4ecf72",    # 초록
-    "net_upload": "#4488ff",      # 파랑
+    "net_download": "#4ade80",    # 초록
+    "net_upload": "#3b82f6",      # 파랑
+
+    # 디스크
+    "disk_warn": "#f5a524",       # 주황 (>=70%)
+    "disk_ok": "#4ade80",         # 초록 (<70%)
+    "disk_read": "#4ade80",
+    "disk_write": "#3b82f6",
 
     # 상태
-    "status_normal": "#4ecf72",
-    "status_warning": "#f0a030",
-    "status_critical": "#e63946",
+    "status_normal": "#4ade80",
+    "status_warning": "#f5a524",
+    "status_critical": "#ef4444",
 }
 
 # 메인 윈도우 스타일시트
@@ -43,7 +52,7 @@ QMainWindow {{
 QWidget {{
     background-color: transparent;
     color: {COLORS['text_primary']};
-    font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+    font-family: 'Pretendard', 'Segoe UI', 'Malgun Gothic', sans-serif;
 }}
 QLabel {{
     color: {COLORS['text_primary']};

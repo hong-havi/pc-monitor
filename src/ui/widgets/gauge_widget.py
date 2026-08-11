@@ -1,4 +1,11 @@
-"""원형 게이지 위젯 - CPU/GPU 사용률, 메모리, VRAM 표시용 + 스파크라인"""
+"""원형 게이지 위젯 - CPU/GPU 사용률, 메모리, VRAM 표시용 + 스파크라인
+
+디자인: 반원형 아크 게이지 (270도) + 하단 영역 스파크라인
+- 배경 트랙: #23272e
+- 중앙에 큰 숫자 + 단위 텍스트
+- 하단에 라벨(CPU/GPU/RAM/VRAM)
+- 최하단에 미니 영역 차트 (스파크라인)
+"""
 import math
 from collections import deque
 from PyQt6.QtWidgets import QWidget, QVBoxLayout
@@ -19,7 +26,7 @@ class SparklineWidget(QWidget):
         self._color = QColor(color)
         self._history = deque([0.0] * self.HISTORY_SIZE, maxlen=self.HISTORY_SIZE)
         self._max_value = 100.0
-        self.setFixedHeight(28)
+        self.setFixedHeight(32)
 
     def set_max_value(self, max_val: float):
         self._max_value = max(max_val, 1.0)
@@ -34,11 +41,8 @@ class SparklineWidget(QWidget):
 
         w = self.width()
         h = self.height()
-        margin_x = 4
-        draw_w = w - margin_x * 2
-        draw_h = h - 4
 
-        if draw_w <= 0 or draw_h <= 0:
+        if w <= 0 or h <= 0:
             painter.end()
             return
 
@@ -50,26 +54,23 @@ class SparklineWidget(QWidget):
         # 포인트 계산
         points = []
         for i, val in enumerate(data):
-            x = margin_x + draw_w * i / (len(data) - 1)
+            x = w * i / (len(data) - 1)
             ratio = min(val / self._max_value, 1.0) if self._max_value > 0 else 0
-            y = (h - 2) - ratio * draw_h
+            y = h - ratio * h
             points.append(QPointF(x, y))
 
         # 영역 채우기
         fill_path = QPainterPath()
-        fill_path.moveTo(QPointF(margin_x, h - 2))
+        fill_path.moveTo(QPointF(0, h))
         for pt in points:
             fill_path.lineTo(pt)
-        fill_path.lineTo(QPointF(margin_x + draw_w, h - 2))
+        fill_path.lineTo(QPointF(w, h))
         fill_path.closeSubpath()
 
         fill_color = QColor(self._color)
-        fill_color.setAlpha(40)
-        gradient = QLinearGradient(0, 0, 0, h)
-        gradient.setColorAt(0, fill_color)
-        gradient.setColorAt(1, QColor(0, 0, 0, 0))
+        fill_color.setAlpha(34)  # ~0x22
         painter.setPen(Qt.PenStyle.NoPen)
-        painter.setBrush(gradient)
+        painter.setBrush(fill_color)
         painter.drawPath(fill_path)
 
         # 라인
@@ -78,7 +79,7 @@ class SparklineWidget(QWidget):
         for pt in points[1:]:
             line_path.lineTo(pt)
 
-        painter.setPen(QPen(self._color, 1.5))
+        painter.setPen(QPen(self._color, 2.2))
         painter.setBrush(Qt.BrushStyle.NoBrush)
         painter.drawPath(line_path)
 
@@ -98,7 +99,7 @@ class GaugeWidget(QWidget):
         label: str = "",
         unit: str = "%",
         max_value: float = 100.0,
-        color: str = "#4ecf72",
+        color: str = "#4ade80",
         parent=None,
     ):
         super().__init__(parent)
@@ -171,9 +172,14 @@ class _GaugeDrawArea(QWidget):
         w = self.width()
         h = self.height()
 
-        # 게이지 영역 계산
-        margin = 10
-        gauge_size = min(w - margin * 2, h - 30)
+        # 게이지 영역 계산 — 라벨 아래 공간 확보
+        margin = 6
+        label_space = 24
+        available_h = h - label_space
+        gauge_size = min(w - margin * 2, available_h - margin)
+        if gauge_size < 40:
+            gauge_size = 40
+
         gauge_rect = QRectF(
             (w - gauge_size) / 2,
             margin,
@@ -181,9 +187,11 @@ class _GaugeDrawArea(QWidget):
             gauge_size,
         )
 
-        # 배경 호 (어두운 트랙)
-        pen = QPen(QColor("#3a3a3a"), 7, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap)
+        # 배경 호 (트랙)
+        track_width = max(int(gauge_size * 0.09), 7)
+        pen = QPen(QColor("#23272e"), track_width, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap)
         painter.setPen(pen)
+        # 270도 호: 시작 225도 → -270도 span
         start_angle = 225 * 16
         span_angle = -270 * 16
         painter.drawArc(gauge_rect, start_angle, span_angle)
@@ -196,13 +204,13 @@ class _GaugeDrawArea(QWidget):
         value_span = int(-270 * 16 * ratio)
 
         pen.setColor(self._color)
-        pen.setWidth(7)
+        pen.setWidth(track_width)
         painter.setPen(pen)
         painter.drawArc(gauge_rect, start_angle, value_span)
 
-        # 중앙 텍스트
+        # 중앙 텍스트 (값)
         center_x = w / 2
-        center_y = gauge_rect.center().y() + 5
+        center_y = gauge_rect.center().y() + gauge_size * 0.05
 
         if self._value >= 100:
             display_val = f"{self._value:.0f}"
@@ -211,7 +219,8 @@ class _GaugeDrawArea(QWidget):
         else:
             display_val = f"{self._value:.1f}"
 
-        font = QFont("Segoe UI", 28, QFont.Weight.Bold)
+        font_size = max(int(gauge_size * 0.28), 16)
+        font = QFont("Pretendard", font_size, QFont.Weight.Bold)
         painter.setFont(font)
         painter.setPen(QColor("#ffffff"))
 
@@ -225,26 +234,28 @@ class _GaugeDrawArea(QWidget):
 
         # 단위 또는 보조 텍스트
         sub = self._sub_text if self._sub_text else self._unit
-        font_sub = QFont("Segoe UI", 12)
+        sub_font_size = max(int(gauge_size * 0.12), 10)
+        font_sub = QFont("Pretendard", sub_font_size, QFont.Weight.DemiBold)
         painter.setFont(font_sub)
-        painter.setPen(QColor("#d0d0d0"))
+        painter.setPen(QColor("#8a929c"))
         metrics_sub = painter.fontMetrics()
         sub_width = metrics_sub.horizontalAdvance(sub)
         painter.drawText(
             int(center_x - sub_width / 2),
-            int(center_y + metrics.ascent() / 3 + 16),
+            int(center_y + metrics.ascent() / 3 + font_size * 0.55),
             sub,
         )
 
-        # 하단 라벨
-        font_label = QFont("Malgun Gothic", 12)
+        # 하단 라벨 (CPU / GPU / RAM / VRAM)
+        label_font_size = max(int(gauge_size * 0.16), 12)
+        font_label = QFont("Pretendard", label_font_size, QFont.Weight.Bold)
         painter.setFont(font_label)
-        painter.setPen(QColor("#d0d0d0"))
+        painter.setPen(QColor("#b3bcc7"))
         label_metrics = painter.fontMetrics()
         label_width = label_metrics.horizontalAdvance(self._label)
         painter.drawText(
             int(center_x - label_width / 2),
-            int(h - 3),
+            int(h - 4),
             self._label,
         )
 

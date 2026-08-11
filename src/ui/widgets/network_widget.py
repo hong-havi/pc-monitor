@@ -1,4 +1,10 @@
-"""네트워크 속도 위젯 - 다운로드/업로드 속도 + 실시간 그래프"""
+"""네트워크 속도 위젯 - 다운로드/업로드 속도 + 실시간 듀얼 라인 그래프
+
+디자인:
+- 헤더: "네트워크" + In/Out 범례
+- 속도 표시: ↓ X.X MB/s  ↑ X.X MB/s
+- 듀얼 라인 그래프 (In=초록, Out=파랑)
+"""
 from collections import deque
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
 from PyQt6.QtCore import Qt, QRectF, QPointF
@@ -9,7 +15,7 @@ from PyQt6.QtGui import (
 
 
 class NetworkGraph(QWidget):
-    """네트워크 속도 실시간 라인 그래프"""
+    """네트워크 속도 실시간 듀얼 라인 그래프"""
 
     HISTORY_SIZE = 60  # 60초간 데이터
 
@@ -18,7 +24,7 @@ class NetworkGraph(QWidget):
         self._download_history = deque([0.0] * self.HISTORY_SIZE, maxlen=self.HISTORY_SIZE)
         self._upload_history = deque([0.0] * self.HISTORY_SIZE, maxlen=self.HISTORY_SIZE)
         self._max_value = 1.0  # 자동 스케일
-        self.setMinimumHeight(50)
+        self.setMinimumHeight(40)
 
     def add_data(self, download: float, upload: float):
         self._download_history.append(download)
@@ -38,26 +44,30 @@ class NetworkGraph(QWidget):
         w = self.width()
         h = self.height()
 
-        # 배경 그리드 라인
-        painter.setPen(QPen(QColor("#333333"), 1, Qt.PenStyle.DotLine))
+        if w <= 0 or h <= 0:
+            painter.end()
+            return
+
+        # 배경 그리드 (수평선)
+        painter.setPen(QPen(QColor("#1d2128"), 1))
         for i in range(1, 4):
             y = h * i / 4
             painter.drawLine(0, int(y), w, int(y))
 
-        # 다운로드 라인 (초록)
-        self._draw_line(
-            painter, self._download_history, QColor("#4ecf72"), QColor(78, 207, 114, 30), w, h
+        # 다운로드 영역 + 라인 (초록)
+        self._draw_area_line(
+            painter, self._download_history, QColor("#4ade80"), w, h
         )
 
-        # 업로드 라인 (파랑)
-        self._draw_line(
-            painter, self._upload_history, QColor("#4488ff"), QColor(68, 136, 255, 30), w, h
+        # 업로드 라인 (파랑, 영역 없음)
+        self._draw_line_only(
+            painter, self._upload_history, QColor("#3b82f6"), w, h
         )
 
         painter.end()
 
-    def _draw_line(self, painter, data, line_color, fill_color, w, h):
-        """라인 + 그라디언트 영역 그리기"""
+    def _draw_area_line(self, painter, data, line_color, w, h):
+        """영역 채우기 + 라인"""
         if len(data) < 2:
             return
 
@@ -76,14 +86,34 @@ class NetworkGraph(QWidget):
         fill_path.lineTo(QPointF(w, h))
         fill_path.closeSubpath()
 
-        gradient = QLinearGradient(0, 0, 0, h)
-        gradient.setColorAt(0, fill_color)
-        gradient.setColorAt(1, QColor(0, 0, 0, 0))
+        fill_color = QColor(line_color)
+        fill_color.setAlpha(24)
         painter.setPen(Qt.PenStyle.NoPen)
-        painter.setBrush(gradient)
+        painter.setBrush(fill_color)
         painter.drawPath(fill_path)
 
         # 라인
+        line_path = QPainterPath()
+        line_path.moveTo(points[0])
+        for pt in points[1:]:
+            line_path.lineTo(pt)
+
+        painter.setPen(QPen(line_color, 2))
+        painter.setBrush(Qt.BrushStyle.NoBrush)
+        painter.drawPath(line_path)
+
+    def _draw_line_only(self, painter, data, line_color, w, h):
+        """라인만 (영역 없음)"""
+        if len(data) < 2:
+            return
+
+        points = []
+        for i, val in enumerate(data):
+            x = w * i / (len(data) - 1)
+            y = h - (val / self._max_value) * h
+            y = max(2, min(h - 2, y))
+            points.append(QPointF(x, y))
+
         line_path = QPainterPath()
         line_path.moveTo(points[0])
         for pt in points[1:]:
@@ -100,66 +130,52 @@ class NetworkWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(8, 4, 8, 4)
-        layout.setSpacing(8)
+        layout.setContentsMargins(10, 6, 10, 8)
+        layout.setSpacing(6)
 
-        # 타이틀
-        title = QLabel("네트워크")
-        title.setFont(QFont("Malgun Gothic", 14))
-        title.setStyleSheet("color: #d0d0d0;")
-        layout.addWidget(title)
-
-        # 헤더: 다운/업 속도 표시
+        # 헤더: 타이틀 + 범례
         header = QHBoxLayout()
-        header.setSpacing(15)
+        header.setSpacing(10)
+
+        title = QLabel("네트워크")
+        title.setFont(QFont("Pretendard", 13, QFont.Weight.Bold))
+        title.setStyleSheet("color: #cfd6de;")
+        header.addWidget(title)
+
+        header.addStretch()
+
+        # 범례
+        legend = QLabel("● In  ● Out")
+        legend.setFont(QFont("Pretendard", 10, QFont.Weight.DemiBold))
+        legend.setStyleSheet("color: #8b939e;")
+        header.addWidget(legend)
+
+        layout.addLayout(header)
+
+        # 속도 표시 행
+        speed_row = QHBoxLayout()
+        speed_row.setSpacing(20)
 
         # 다운로드
-        dl_layout = QVBoxLayout()
-        dl_layout.setSpacing(0)
-        dl_title = QLabel("↓ 다운")
-        dl_title.setFont(QFont("Malgun Gothic", 12))
-        dl_title.setStyleSheet("color: #d0d0d0;")
-        dl_layout.addWidget(dl_title)
-
-        self.dl_value = QLabel("0.0")
-        self.dl_value.setFont(QFont("Segoe UI", 22, QFont.Weight.Bold))
-        self.dl_value.setStyleSheet("color: #4ecf72;")
-        dl_layout.addWidget(self.dl_value)
-
-        self.dl_unit = QLabel("MB/s")
-        self.dl_unit.setFont(QFont("Segoe UI", 12))
-        self.dl_unit.setStyleSheet("color: #d0d0d0;")
-        dl_layout.addWidget(self.dl_unit)
-
-        header.addLayout(dl_layout)
+        self._dl_label = QLabel("↓ 0.0 MB/s")
+        self._dl_label.setFont(QFont("Pretendard", 14, QFont.Weight.Bold))
+        self._dl_label.setStyleSheet("color: #4ade80;")
+        speed_row.addWidget(self._dl_label)
 
         # 업로드
-        ul_layout = QVBoxLayout()
-        ul_layout.setSpacing(0)
-        ul_title = QLabel("↑ 업")
-        ul_title.setFont(QFont("Malgun Gothic", 12))
-        ul_title.setStyleSheet("color: #d0d0d0;")
-        ul_layout.addWidget(ul_title)
+        self._ul_label = QLabel("↑ 0.0 MB/s")
+        self._ul_label.setFont(QFont("Pretendard", 14, QFont.Weight.Bold))
+        self._ul_label.setStyleSheet("color: #3b82f6;")
+        speed_row.addWidget(self._ul_label)
 
-        self.ul_value = QLabel("0.0")
-        self.ul_value.setFont(QFont("Segoe UI", 22, QFont.Weight.Bold))
-        self.ul_value.setStyleSheet("color: #4488ff;")
-        ul_layout.addWidget(self.ul_value)
-
-        self.ul_unit = QLabel("MB/s")
-        self.ul_unit.setFont(QFont("Segoe UI", 12))
-        self.ul_unit.setStyleSheet("color: #d0d0d0;")
-        ul_layout.addWidget(self.ul_unit)
-
-        header.addLayout(ul_layout)
-        header.addStretch()
-        layout.addLayout(header)
+        speed_row.addStretch()
+        layout.addLayout(speed_row)
 
         # 그래프
         self.graph = NetworkGraph()
-        layout.addWidget(self.graph)
+        layout.addWidget(self.graph, stretch=1)
 
     def update_data(self, download_mbps: float, upload_mbps: float):
-        self.dl_value.setText(f"{download_mbps:.1f}")
-        self.ul_value.setText(f"{upload_mbps:.1f}")
+        self._dl_label.setText(f"↓ {download_mbps:.1f} MB/s")
+        self._ul_label.setText(f"↑ {upload_mbps:.1f} MB/s")
         self.graph.add_data(download_mbps, upload_mbps)
