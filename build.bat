@@ -2,6 +2,13 @@
 echo === PC Monitor Dashboard Build ===
 echo.
 
+REM lib 폴더 체크
+if not exist "lib\lhm-096\LibreHardwareMonitor.exe" (
+    echo ERROR: lib folder not found. Run setup_libs.bat first!
+    pause
+    exit /b 1
+)
+
 echo Building exe...
 python -m PyInstaller ^
     --onefile ^
