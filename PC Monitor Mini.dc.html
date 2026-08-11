@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<style>
+  body { margin: 0; background: #0b0d10; }
+  a { color: #7c9cff; text-decoration: none; }
+  a:hover { color: #a5bbff; }
+</style>
+</helmet>
+<div style="width: 960px; height: 640px; box-sizing: border-box; padding: 12px; background: #0b0d10; font-family: Pretendard, -apple-system, sans-serif; color: #e8eaed; display: grid; grid-template-rows: auto 178px minmax(0, 1fr) minmax(0, 1fr); gap: 9px; font-variant-numeric: tabular-nums; overflow: hidden;">
+
+  <header style="display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 2px;">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <span style="font-size: 22px; font-weight: 800; letter-spacing: 0.06em; color: #f2f4f7;">PC MONITOR</span>
+      <span style="display: inline-flex; align-items: center; gap: 7px; padding: 4px 11px; border-radius: 999px; background: rgba(74,222,128,0.14);">
+        <span style="width: 8px; height: 8px; border-radius: 50%; background: #4ade80;"></span>
+        <span style="font-size: 18px; font-weight: 700; color: #4ade80;">정상</span>
+      </span>
+      <span style="font-size: 18px; font-weight: 600; color: #7c848f;">가동 14일 22:50</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span style="font-size: 19px; font-weight: 600; color: #8b939e;">2026-08-11 (화) 09:06</span>
+      <button onClick="{{ toggleFullscreen }}" style="width: 34px; height: 34px; display: grid; place-items: center; border-radius: 9px; border: 1px solid #262b32; background: #14171b; color: #9aa3ae; cursor: pointer; padding: 0;">
+        <svg width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+          <path d="M1 5V1.8A.8.8 0 0 1 1.8 1H5"></path>
+          <path d="M13 5V1.8A.8.8 0 0 0 12.2 1H9"></path>
+          <path d="M1 9v3.2a.8.8 0 0 0 .8.8H5"></path>
+          <path d="M13 9v3.2a.8.8 0 0 1-.8.8H9"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <section style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px;">
+    <article style="background: #14171b; border: 1px solid #22262c; border-radius: 12px; padding: 6px 0 0; display: flex; flex-direction: column; align-items: center; gap: 2px; overflow: hidden;">
+      <div style="position: relative; width: 100%; display: flex; justify-content: center;">
+        <svg width="100%" height="104" viewBox="0 0 192 100" style="display: block;">
+          <path d="M22 90 A 74 74 0 1 1 170 90" fill="none" stroke="#23272e" stroke-width="14" stroke-linecap="round"></path>
+          <path d="M22 90 A 74 74 0 1 1 170 90" fill="none" stroke="#8b7cf6" stroke-width="14" stroke-linecap="round" stroke-dasharray="232.5" stroke-dashoffset="69.5"></path>
+        </svg>
+        <div style="position: absolute; left: 0; right: 0; top: 42%; display: flex; flex-direction: column; align-items: center; gap: 1px; pointer-events: none;">
+          <span style="font-size: 36px; font-weight: 700; color: #ffffff; line-height: 1;">70</span>
+          <span style="font-size: 16px; font-weight: 600; color: #8a929c; line-height: 1;">%</span>
+        </div>
+      </div>
+      <div style="font-size: 21px; font-weight: 700; letter-spacing: 0.06em; color: #b3bcc7;">CPU</div>
+      <svg width="100%" height="40" viewBox="0 0 240 46" preserveAspectRatio="none" style="margin-top: auto; display: block;">
+        <path d="M0 38 L26 36 L48 32 L64 18 L82 28 L98 14 L114 24 L132 10 L150 20 L168 8 L186 18 L204 6 L222 15 L240 9 L240 46 L0 46 Z" fill="#8b7cf622"></path>
+        <path d="M0 38 L26 36 L48 32 L64 18 L82 28 L98 14 L114 24 L132 10 L150 20 L168 8 L186 18 L204 6 L222 15 L240 9" fill="none" stroke="#8b7cf6" stroke-width="2.2" vector-effect="non-scaling-stroke"></path>
+      </svg>
+    </article>
+    <article style="background: #14171b; border: 1px solid #22262c; border-radius: 12px; padding: 6px 0 0; display: flex; flex-direction: column; align-items: center; gap: 2px; overflow: hidden;">
+      <div style="position: relative; width: 100%; display: flex; justify-content: center;">
+        <svg width="100%" height="104" viewBox="0 0 192 100" style="display: block;">
+          <path d="M22 90 A 74 74 0 1 1 170 90" fill="none" stroke="#23272e" stroke-width="14" stroke-linecap="round"></path>
+          <path d="M22 90 A 74 74 0 1 1 170 90" fill="none" stroke="#22d3ee" stroke-width="14" stroke-linecap="round" stroke-dasharray="232.5" stroke-dashoffset="229"></path>
+        </svg>
+        <div style="position: absolute; left: 0; right: 0; top: 42%; display: flex; flex-direction: column; align-items: center; gap: 1px; pointer-events: none;">
+          <span style="font-size: 36px; font-weight: 700; color: #ffffff; line-height: 1;">2</span>
+          <span style="font-size: 16px; font-weight: 600; color: #8a929c; line-height: 1;">%</span>
+        </div>
+      </div>
+      <div style="font-size: 21px; font-weight: 700; letter-spacing: 0.06em; color: #b3bcc7;">GPU</div>
+      <svg width="100%" height="40" viewBox="0 0 240 46" preserveAspectRatio="none" style="margin-top: auto; display: block;">
+        <path d="M0 42 L48 42 L96 41 L144 42 L192 41 L240 42 L240 46 L0 46 Z" fill="#22d3ee22"></path>
+        <path d="M0 42 L48 42 L96 41 L144 42 L192 41 L240 42" fill="none" stroke="#22d3ee" stroke-width="2.2" vector-effect="non-scaling-stroke"></path>
+      </svg>
+    </article>
+    <article style="background: #14171b; border: 1px solid #22262c; border-radius: 12px; padding: 6px 0 0; display: flex; flex-direction: column; align-items: center; gap: 2px; overflow: hidden;">
+      <div style="position: relative; width: 100%; display: flex; justify-content: center;">
+        <svg width="100%" height="104" viewBox="0 0 192 100" style="display: block;">
+          <path d="M22 90 A 74 74 0 1 1 170 90" fill="none" stroke="#23272e" stroke-width="14" stroke-linecap="round"></path>
+          <path d="M22 90 A 74 74 0 1 1 170 90" fill="none" stroke="#3b82f6" stroke-width="14" stroke-linecap="round" stroke-dasharray="232.5" stroke-dashoffset="37.7"></path>
+        </svg>
+        <div style="position: absolute; left: 0; right: 0; top: 42%; display: flex; flex-direction: column; align-items: center; gap: 1px; pointer-events: none;">
+          <span style="font-size: 36px; font-weight: 700; color: #ffffff; line-height: 1;">26.8</span>
+          <span style="font-size: 16px; font-weight: 600; color: #8a929c; line-height: 1;">/ 32 GB</span>
+        </div>
+      </div>
+      <div style="font-size: 21px; font-weight: 700; letter-spacing: 0.06em; color: #b3bcc7;">RAM</div>
+      <svg width="100%" height="40" viewBox="0 0 240 46" preserveAspectRatio="none" style="margin-top: auto; display: block;">
+        <path d="M0 40 L60 39 L88 16 L120 12 L180 13 L240 12 L240 46 L0 46 Z" fill="#3b82f622"></path>
+        <path d="M0 40 L60 39 L88 16 L120 12 L180 13 L240 12" fill="none" stroke="#3b82f6" stroke-width="2.2" vector-effect="non-scaling-stroke"></path>
+      </svg>
+    </article>
+    <article style="background: #14171b; border: 1px solid #22262c; border-radius: 12px; padding: 6px 0 0; display: flex; flex-direction: column; align-items: center; gap: 2px; overflow: hidden;">
+      <div style="position: relative; width: 100%; display: flex; justify-content: center;">
+        <svg width="100%" height="104" viewBox="0 0 192 100" style="display: block;">
+          <path d="M22 90 A 74 74 0 1 1 170 90" fill="none" stroke="#23272e" stroke-width="14" stroke-linecap="round"></path>
+          <path d="M22 90 A 74 74 0 1 1 170 90" fill="none" stroke="#f59e0b" stroke-width="14" stroke-linecap="round" stroke-dasharray="232.5" stroke-dashoffset="145.3"></path>
+        </svg>
+        <div style="position: absolute; left: 0; right: 0; top: 42%; display: flex; flex-direction: column; align-items: center; gap: 1px; pointer-events: none;">
+          <span style="font-size: 36px; font-weight: 700; color: #ffffff; line-height: 1;">1.5</span>
+          <span style="font-size: 16px; font-weight: 600; color: #8a929c; line-height: 1;">/ 4 GB</span>
+        </div>
+      </div>
+      <div style="font-size: 21px; font-weight: 700; letter-spacing: 0.06em; color: #b3bcc7;">VRAM</div>
+      <svg width="100%" height="40" viewBox="0 0 240 46" preserveAspectRatio="none" style="margin-top: auto; display: block;">
+        <path d="M0 43 L96 43 L128 30 L156 27 L200 28 L240 27 L240 46 L0 46 Z" fill="#f59e0b22"></path>
+        <path d="M0 43 L96 43 L128 30 L156 27 L200 28 L240 27" fill="none" stroke="#f59e0b" stroke-width="2.2" vector-effect="non-scaling-stroke"></path>
+      </svg>
+    </article>
+  </section>
+
+  <section style="display: grid; grid-template-columns: 1.15fr 1fr 0.9fr; gap: 9px;">
+    <article style="background: #14171b; border: 1px solid #22262c; border-radius: 12px; padding: 10px 14px 12px; display: flex; flex-direction: column; gap: 10px;">
+      <h2 style="margin: 0; font-size: 19px; font-weight: 700; color: #cfd6de;">온도</h2>
+      <div style="display: flex; align-items: flex-end; gap: 16px; flex: 1; min-height: 0; padding: 0 4px;">
+        <div style="flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 5px;">
+          <span style="font-size: 22px; font-weight: 700; color: #f5a524;">72°</span>
+          <span style="width: 100%; height: 72%; border-radius: 4px 4px 0 0; background: #f5a524;"></span>
+          <span style="font-size: 17px; font-weight: 600; color: #9aa3ae;">CPU</span>
+        </div>
+        <div style="flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 5px;">
+          <span style="font-size: 22px; font-weight: 700; color: #4ade80;">48°</span>
+          <span style="width: 100%; height: 48%; border-radius: 4px 4px 0 0; background: #4ade80;"></span>
+          <span style="font-size: 17px; font-weight: 600; color: #9aa3ae;">GPU</span>
+        </div>
+        <div style="flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 5px;">
+          <span style="font-size: 22px; font-weight: 700; color: #4ade80;">37°</span>
+          <span style="width: 100%; height: 37%; border-radius: 4px 4px 0 0; background: #4ade80;"></span>
+          <span style="font-size: 17px; font-weight: 600; color: #9aa3ae;">보드</span>
+        </div>
+      </div>
+    </article>
+
+    <article style="background: #14171b; border: 1px solid #22262c; border-radius: 12px; padding: 10px 14px 12px; display: flex; flex-direction: column; gap: 10px;">
+      <h2 style="margin: 0; font-size: 19px; font-weight: 700; color: #cfd6de;">클럭</h2>
+      <div style="display: flex; flex-direction: column; justify-content: center; flex: 1; min-height: 0; gap: 8px;">
+        <div style="display: flex; flex-direction: column; gap: 5px;">
+          <div style="display: flex; align-items: baseline; justify-content: space-between;">
+            <span style="font-size: 18px; font-weight: 600; color: #9aa3ae;">CPU</span>
+            <span style="font-size: 30px; font-weight: 700; color: #f2f4f7; line-height: 1;">4.24<span style="font-size: 17px; color: #8a929c; margin-left: 4px;">GHz</span></span>
+          </div>
+          <span style="height: 12px; border-radius: 3px; background: #23272e; display: block; overflow: hidden;"><span style="display: block; height: 100%; width: 76%; background: #3b82f6;"></span></span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 5px;">
+          <div style="display: flex; align-items: baseline; justify-content: space-between;">
+            <span style="font-size: 18px; font-weight: 600; color: #9aa3ae;">GPU</span>
+            <span style="font-size: 30px; font-weight: 700; color: #f2f4f7; line-height: 1;">300<span style="font-size: 17px; color: #8a929c; margin-left: 4px;">MHz</span></span>
+          </div>
+          <span style="height: 12px; border-radius: 3px; background: #23272e; display: block; overflow: hidden;"><span style="display: block; height: 100%; width: 14%; background: #3b82f6;"></span></span>
+        </div>
+      </div>
+    </article>
+
+    <article style="background: #14171b; border: 1px solid #22262c; border-radius: 12px; padding: 10px 14px 12px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px;">
+      <h2 style="margin: 0; font-size: 19px; font-weight: 700; color: #cfd6de;">전력</h2>
+      <div style="display: flex; align-items: baseline; justify-content: space-between;">
+        <span style="font-size: 18px; font-weight: 600; color: #9aa3ae;">합계</span>
+        <span style="font-size: 40px; font-weight: 700; color: #f5a524; line-height: 1;">47<span style="font-size: 19px; opacity: 0.8; margin-left: 3px;">W</span></span>
+      </div>
+      <span style="height: 14px; border-radius: 4px; background: #23272e; display: block; overflow: hidden;"><span style="display: block; height: 100%; width: 24%; background: #f5a524;"></span></span>
+      <div style="display: flex; justify-content: space-between; font-size: 17px; font-weight: 600; color: #8b939e;">
+        <span>CPU 47W</span><span>GPU 0W</span>
+      </div>
+    </article>
+  </section>
+
+  <section style="display: grid; grid-template-columns: 1fr 1.35fr; gap: 9px;">
+    <article style="background: #14171b; border: 1px solid #22262c; border-radius: 12px; padding: 10px 14px 12px; display: flex; flex-direction: column; gap: 8px;">
+      <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px;">
+        <h2 style="margin: 0; font-size: 19px; font-weight: 700; color: #cfd6de;">네트워크</h2>
+        <span style="display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; color: #8b939e;">
+          <span style="display: flex; align-items: center; gap: 5px;"><span style="width: 14px; height: 3px; border-radius: 2px; background: #4ade80;"></span>In</span>
+          <span style="display: flex; align-items: center; gap: 5px;"><span style="width: 14px; height: 3px; border-radius: 2px; background: #3b82f6;"></span>Out</span>
+        </span>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div style="display: flex; align-items: baseline; gap: 7px;">
+          <span style="font-size: 20px; font-weight: 700; color: #4ade80;">↓</span>
+          <span style="font-size: 30px; font-weight: 700; color: #4ade80; line-height: 1;">0.0</span>
+          <span style="font-size: 17px; color: #7c848f;">MB/s</span>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 7px;">
+          <span style="font-size: 20px; font-weight: 700; color: #3b82f6;">↑</span>
+          <span style="font-size: 30px; font-weight: 700; color: #3b82f6; line-height: 1;">0.0</span>
+          <span style="font-size: 17px; color: #7c848f;">MB/s</span>
+        </div>
+      </div>
+      <div style="flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: flex-end;">
+        <svg width="100%" height="100%" viewBox="0 0 300 80" preserveAspectRatio="none" style="display: block; background-image: linear-gradient(to bottom, #1d2128 1px, transparent 1px); background-size: 100% 25%;">
+          <path d="M0 30 L60 28 L110 46 L150 22 L200 52 L250 34 L300 40 L300 80 L0 80 Z" fill="#4ade8018"></path>
+          <path d="M0 30 L60 28 L110 46 L150 22 L200 52 L250 34 L300 40" fill="none" stroke="#4ade80" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+          <path d="M0 66 L60 70 L110 62 L150 72 L200 60 L250 68 L300 64" fill="none" stroke="#3b82f6" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+        </svg>
+      </div>
+    </article>
+
+    <article style="background: #14171b; border: 1px solid #22262c; border-radius: 12px; padding: 10px 14px 12px; display: flex; flex-direction: column; gap: 8px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 14px;">
+        <h2 style="margin: 0; font-size: 19px; font-weight: 700; color: #cfd6de;">디스크</h2>
+        <span style="display: flex; align-items: center; gap: 12px; font-size: 16px; font-weight: 600; color: #8b939e;">
+          <span style="display: flex; align-items: center; gap: 5px;"><span style="width: 14px; height: 3px; border-radius: 2px; background: #4ade80;"></span>R <span style="color: #4ade80;">39.2</span></span>
+          <span style="display: flex; align-items: center; gap: 5px;"><span style="width: 14px; height: 3px; border-radius: 2px; background: #3b82f6;"></span>W <span style="color: #3b82f6;">5.8</span></span>
+          <span style="color: #5f6772;">MB/s · 60초</span>
+        </span>
+      </div>
+      <div style="display: flex; flex-direction: column; justify-content: center; flex: 1; min-height: 0; gap: 8px;">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <div style="display: flex; align-items: baseline; gap: 10px;">
+            <span style="font-size: 19px; font-weight: 700; color: #c8ced6;">C:</span>
+            <span style="font-size: 18px; font-weight: 600; color: #f5a524;">76%</span>
+            <span style="margin-left: auto; font-size: 17px; font-weight: 600; color: #8b939e;">381 / 500 GB · 119GB 남음</span>
+          </div>
+          <span style="height: 16px; border-radius: 4px; background: #23272e; display: block; overflow: hidden;"><span style="display: block; height: 100%; width: 76%; background: #f5a524;"></span></span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <div style="display: flex; align-items: baseline; gap: 10px;">
+            <span style="font-size: 19px; font-weight: 700; color: #c8ced6;">D:</span>
+            <span style="font-size: 18px; font-weight: 600; color: #4ade80;">43%</span>
+            <span style="margin-left: auto; font-size: 17px; font-weight: 600; color: #8b939e;">160 / 372 GB · 212GB 남음</span>
+          </div>
+          <span style="height: 16px; border-radius: 4px; background: #23272e; display: block; overflow: hidden;"><span style="display: block; height: 100%; width: 43%; background: #4ade80;"></span></span>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; flex: 0 0 auto;">
+        <svg width="100%" height="38" viewBox="0 0 300 60" preserveAspectRatio="none" style="display: block; background-image: linear-gradient(to bottom, #1d2128 1px, transparent 1px); background-size: 100% 33.3%;">
+          <path d="M0 44 L40 40 L70 18 L100 30 L130 12 L165 34 L200 20 L235 42 L270 26 L300 32 L300 60 L0 60 Z" fill="#4ade8018"></path>
+          <path d="M0 44 L40 40 L70 18 L100 30 L130 12 L165 34 L200 20 L235 42 L270 26 L300 32" fill="none" stroke="#4ade80" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+          <path d="M0 54 L40 52 L70 46 L100 50 L130 40 L165 52 L200 44 L235 54 L270 48 L300 50" fill="none" stroke="#3b82f6" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+        </svg>
+      </div>
+    </article>
+  </section>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:960,&quot;height&quot;:640}}">class Component extends DCLogic {
+  renderVals() {
+    return {
+      toggleFullscreen: () => {
+        const el = document.documentElement;
+        if (document.fullscreenElement) document.exitFullscreen();
+        else if (el.requestFullscreen) el.requestFullscreen();
+      },
+    };
+  }
+}</script>
+</body>
+</html>
