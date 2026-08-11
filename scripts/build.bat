@@ -5,6 +5,10 @@ cd /d "%~dp0.."
 echo === PC Monitor Dashboard Build ===
 echo.
 
+REM 기존 프로세스 종료
+taskkill /F /IM PCMonitor.exe >nul 2>&1
+timeout /t 1 /nobreak >nul
+
 REM lib 폴더 체크
 if not exist "lib\lhm-096\LibreHardwareMonitor.exe" (
     echo ERROR: lib folder not found. Run scripts\setup_libs.bat first!

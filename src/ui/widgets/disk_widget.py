@@ -208,10 +208,10 @@ class DiskWidget(QWidget):
 
         header.addStretch()
 
-        # R/W 속도 표시
-        self._speed_label = QLabel("R 0.0  W 0.0 MB/s · 60초")
+        # R/W 속도 표시 (그래프 색과 동일하게)
+        self._speed_label = QLabel('<span style="color:#4ade80;">R 0.0</span>  <span style="color:#3b82f6;">W 0.0</span> <span style="color:#b0b8c4;">MB/s · 60초</span>')
         self._speed_label.setFont(QFont("Pretendard", 10, QFont.Weight.DemiBold))
-        self._speed_label.setStyleSheet("color: #b0b8c4;")
+        self._speed_label.setTextFormat(Qt.TextFormat.RichText)
         header.addWidget(self._speed_label)
 
         layout.addLayout(header)
@@ -232,9 +232,11 @@ class DiskWidget(QWidget):
 
     def update_data(self, read_speed: float, write_speed: float, disks: list):
         """데이터 업데이트"""
-        # 속도 헤더 업데이트
+        # 속도 헤더 업데이트 (그래프 색과 동일)
         self._speed_label.setText(
-            f"R {read_speed:.1f}  W {write_speed:.1f} MB/s · 60초"
+            f'<span style="color:#4ade80;">R {read_speed:.1f}</span>  '
+            f'<span style="color:#3b82f6;">W {write_speed:.1f}</span> '
+            f'<span style="color:#b0b8c4;">MB/s · 60초</span>'
         )
 
         # 드라이브 바 업데이트

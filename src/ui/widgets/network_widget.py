@@ -144,10 +144,10 @@ class NetworkWidget(QWidget):
 
         header.addStretch()
 
-        # 범례
-        legend = QLabel("● In  ● Out")
+        # 범례 (그래프 색과 동일하게)
+        legend = QLabel('<span style="color:#4ade80;">● In</span>  <span style="color:#3b82f6;">● Out</span>')
         legend.setFont(QFont("Pretendard", 10, QFont.Weight.DemiBold))
-        legend.setStyleSheet("color: #b0b8c4;")
+        legend.setTextFormat(Qt.TextFormat.RichText)
         header.addWidget(legend)
 
         layout.addLayout(header)
