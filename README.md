@@ -13,7 +13,32 @@
 - **네트워크** — 다운/업 속도 + 실시간 그래프
 - **디스크** — Read/Write 속도 + 드라이브별 사용량
 
-## 요구사항
+## 다운로드 및 실행
+
+### 다운로드
+
+[Releases 페이지](https://github.com/hong-havi/pc-monitor/releases)에서 최신 버전의 `PCMonitor.exe`를 다운로드합니다.
+
+### 실행 방법
+
+온도, 클럭, 전력 등 하드웨어 센서 데이터를 읽으려면 **관리자 권한**이 필요합니다.
+
+1. 다운로드한 `PCMonitor.exe`를 원하는 폴더에 저장
+2. `PCMonitor.exe`를 **우클릭** → **관리자 권한으로 실행**
+3. Windows SmartScreen 경고가 뜨면 **추가 정보** → **실행** 클릭
+
+> **팁:** 매번 관리자 권한으로 실행하려면:
+> 1. `PCMonitor.exe` 우클릭 → **속성**
+> 2. **호환성** 탭 → **관리자 권한으로 이 프로그램 실행** 체크 → 확인
+
+### 요구 환경
+
+- Windows 10/11
+- 별도 설치 필요 없음 (단일 exe 실행 파일)
+
+---
+
+## 요구사항 (개발용)
 
 - Windows 10/11
 - Python 3.13+ (MS Store 또는 공식 배포판)
@@ -72,6 +97,20 @@ python src/main.py
 3. Options → Remote Web Server → Run 체크 (HTTP 서버 활성화)
 
 PCMonitor.exe는 LHM을 자동으로 백그라운드 실행합니다 (`lib/lhm-096` 번들).
+
+## 릴리스 배포
+
+태그를 push하면 GitHub Actions가 자동으로 빌드하여 Release에 exe를 첨부합니다.
+
+```bash
+# 새 버전 릴리스
+git tag v1.1.0
+git push origin v1.1.0
+```
+
+워크플로우: `.github/workflows/release.yml`
+
+---
 
 ## 프로젝트 구조
 
